@@ -8,3 +8,5 @@ edition = "2021"
 [dependencies]
 omnia-core-sdk = { path = "../omnia-core-sdk", version = "0.1.0" }
 hex = "0.4.3"
+ic-ledger-types = "0.5.0"
+ic-cdk = "0.8.1"
