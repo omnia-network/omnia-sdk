@@ -3,13 +3,12 @@ use ic_ledger_types::{
     transfer, AccountIdentifier, BlockIndex, Memo, Timestamp, Tokens,
     TransferArgs, DEFAULT_FEE, DEFAULT_SUBACCOUNT,
 };
-use omnia_core_sdk::access_key::AccessKeyUID;
 
-use crate::INIT_PARAMS_REF_CELL;
+use crate::{INIT_PARAMS_REF_CELL, access_key::AccessKeyUID};
 
 pub const ACCESS_KEY_PRICE: Tokens = Tokens::from_e8s(1_000_000);
 
-pub async fn request_access_key() -> Result<AccessKeyUID, String>{
+pub async fn request_access_key() -> Result<AccessKeyUID, String> {
     let params = INIT_PARAMS_REF_CELL.with(|params| {
         params.borrow().clone()
     });
@@ -18,6 +17,8 @@ pub async fn request_access_key() -> Result<AccessKeyUID, String>{
         params.omnia_canister_id.expect("omnia canister principal must be set"),
         ACCESS_KEY_PRICE
     ).await?;
+
+    // TODO: delay the call to Omnia Backend in order to let the IC finalize the transfer for the fee
 
     call::<(BlockIndex,), (Result<AccessKeyUID, String>,)>(
         params.omnia_canister_id.expect("omnia canister principal must be set"),

@@ -3,8 +3,10 @@ use ic_cdk::api::management_canister::ecdsa::{SignWithEcdsaArgument, SignWithEcd
 use serde::{Deserialize, Serialize};
 use serde_json::to_string;
 use sha2::Sha256;
+use rand::Rng;
 
-use crate::signature::EcdsaKeyIds;
+use crate::{signature::{EcdsaKeyIds, SignatureReply}, INIT_PARAMS_REF_CELL};
+
 
 pub type AccessKeyUID = String;
 
@@ -15,7 +17,10 @@ pub struct UniqueAccessKey {
 }
 
 impl UniqueAccessKey {
-    pub fn new(nonce: u128, key: AccessKeyUID) -> Self {
+    pub fn new(key: AccessKeyUID) -> Self {
+        let nonce = INIT_PARAMS_REF_CELL.with(|params| {
+            params.borrow_mut().rng.gen()
+        });
         Self { nonce, key }
     }
 
@@ -52,4 +57,11 @@ impl UniqueAccessKey {
             .map_err(|e| format!("sign_with_ecdsa failed {:?}", e))?;
         Ok(response)
     }
+}
+
+pub async fn generate_signed_unique_access_key(unique_access_key: UniqueAccessKey) -> Result<SignatureReply, String> {
+    Ok(SignatureReply {
+        signature_hex: hex::encode(unique_access_key.generate_signature().await?.signature),
+        unique_access_key,
+    })
 }
