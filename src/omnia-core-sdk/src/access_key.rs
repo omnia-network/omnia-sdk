@@ -40,7 +40,7 @@ impl UniqueAccessKey {
         hasher.finalize().into()
     }
 
-    pub async fn generate_signature(self) -> Result<SignWithEcdsaResponse, String> {
+    pub async fn generate_signature(&self) -> Result<SignWithEcdsaResponse, String> {
         let request = SignWithEcdsaArgument {
             message_hash: self.generate_hash().to_vec(),
             derivation_path: vec![],
