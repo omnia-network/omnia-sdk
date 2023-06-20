@@ -1,7 +1,10 @@
 use candid::CandidType;
+use ic_cdk::api::management_canister::ecdsa::{SignWithEcdsaArgument, SignWithEcdsaResponse, sign_with_ecdsa};
 use serde::{Deserialize, Serialize};
 use serde_json::to_string;
 use sha2::Sha256;
+
+use crate::signature::EcdsaKeyIds;
 
 pub type AccessKeyUID = String;
 
@@ -35,5 +38,18 @@ impl UniqueAccessKey {
         let mut hasher = Sha256::new();
         hasher.update(self.serialize().as_bytes());
         hasher.finalize().into()
+    }
+
+    pub async fn generate_signature(self) -> Result<SignWithEcdsaResponse, String> {
+        let request = SignWithEcdsaArgument {
+            message_hash: self.generate_hash().to_vec(),
+            derivation_path: vec![],
+            key_id: EcdsaKeyIds::TestKeyLocalDevelopment.to_key_id(),
+        };
+
+        let (response, ) = sign_with_ecdsa(request)
+            .await
+            .map_err(|e| format!("sign_with_ecdsa failed {:?}", e))?;
+        Ok(response)
     }
 }
