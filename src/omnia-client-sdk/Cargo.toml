@@ -1,0 +1,9 @@
+[package]
+name = "omnia-client-sdk"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+omnia-core-sdk = { path = "../omnia-core-sdk", version = "0.1.0" }
