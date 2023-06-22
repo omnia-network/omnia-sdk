@@ -1,7 +1,6 @@
 [workspace]
 members = [
   "src/omnia-core-sdk",
-  "src/omnia-client-sdk",
 ]
 
 [profile.canister-release]
