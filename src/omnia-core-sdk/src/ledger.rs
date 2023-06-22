@@ -1,40 +1,15 @@
-use ic_cdk::{api::{management_canister::provisional::CanisterId, print, time}, call};
+use candid::Principal;
+use ic_cdk::api::{print, time};
 use ic_ledger_types::{
-    transfer, AccountIdentifier, BlockIndex, Memo, Timestamp, Tokens,
-    TransferArgs, DEFAULT_FEE, DEFAULT_SUBACCOUNT,
+    transfer, AccountIdentifier, BlockIndex, Memo, Timestamp, Tokens, TransferArgs, DEFAULT_FEE,
+    DEFAULT_SUBACCOUNT,
 };
 
-use crate::{INIT_PARAMS_REF_CELL, access_key::AccessKeyUID};
+use crate::INIT_PARAMS_REF_CELL;
 
-pub const ACCESS_KEY_PRICE: Tokens = Tokens::from_e8s(1_000_000);
-
-pub async fn request_access_key() -> Result<AccessKeyUID, String> {
-    let params = INIT_PARAMS_REF_CELL.with(|params| {
-        params.borrow().clone()
-    });
-    let block_index = transfer_to(
-        params.ledger_canister_id.expect("ledger canister principal must be set"),
-        params.omnia_canister_id.expect("omnia canister principal must be set"),
-        ACCESS_KEY_PRICE
-    ).await?;
-
-    // TODO: delay the call to Omnia Backend in order to let the IC finalize the transfer for the fee
-
-    call::<(BlockIndex,), (Result<AccessKeyUID, String>,)>(
-        params.omnia_canister_id.expect("omnia canister principal must be set"),
-        "obtainAccessKey",
-        (block_index,),
-    )
-    .await
-    .unwrap()
-    .0
-}
-
-async fn transfer_to(
-    ledger_canister_id: CanisterId,
-    principal: CanisterId,
-    amount: Tokens,
-) -> Result<BlockIndex, String> {
+pub async fn transfer_to(principal: Principal, amount: Tokens) -> Result<BlockIndex, String> {
+    let ledger_canister_id =
+        INIT_PARAMS_REF_CELL.with(|params| params.borrow().ledger_canister_id());
     let block_index = transfer(
         ledger_canister_id,
         TransferArgs {
