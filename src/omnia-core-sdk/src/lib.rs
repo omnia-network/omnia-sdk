@@ -14,16 +14,17 @@ thread_local! {
     pub static INIT_PARAMS_REF_CELL: RefCell<InitParams>  = RefCell::new(InitParams::default());
 }
 
+/// The parameters needed to initialize the SDK.
 #[derive(Clone)]
 pub struct InitParams {
     /// The random number generator created in the canister that imports the SDK.
-    rng: StdRng,
+    pub rng: StdRng,
     /// The id of the Omnia Backend canister.
     /// If empty, the SDK will use the IC Omnia Backend canister id.
-    omnia_canister_id: Option<CanisterId>,
+    pub omnia_canister_id: Option<CanisterId>,
     /// The id of the Ledger canister.
     /// If empty, the SDK will use the IC Ledger canister id.
-    ledger_canister_id: Option<CanisterId>,
+    pub ledger_canister_id: Option<CanisterId>,
 }
 
 impl InitParams {
