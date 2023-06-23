@@ -1,9 +1,8 @@
 use ic_cdk::api::management_canister::http_request::HttpHeader;
-use rand::Rng;
 
 use crate::{
     access_key::{generate_signed_unique_access_key, AccessKeyUID},
-    INIT_PARAMS_REF_CELL,
+    random::generate_nonce,
 };
 
 /// Returns the headers to be used in the HTTP requests to the device URL.
@@ -17,9 +16,8 @@ pub async fn get_request_headers(
 ) -> Result<Vec<HttpHeader>, String> {
     let singed_access_key = generate_signed_unique_access_key(access_key).await?;
 
-    let idempotent_key: u64 = INIT_PARAMS_REF_CELL
-        .with(|params| params.borrow_mut().rng().clone())
-        .gen();
+    // a bit of an overkill for the idempotency key, but it's fine
+    let idempotent_key = generate_nonce();
 
     let mut headers = device_headers.unwrap_or(vec![]);
 

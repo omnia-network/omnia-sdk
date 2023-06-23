@@ -6,13 +6,13 @@ use ic_cdk::{
     call,
 };
 use ic_ledger_types::{BlockIndex, Tokens};
-use rand::Rng;
 use serde::{Deserialize, Serialize};
 use serde_json::to_string;
 use sha2::Sha256;
 
 use crate::{
     ledger::transfer_to,
+    random::generate_nonce,
     signature::{EcdsaKeyIds, SignatureReply},
     INIT_PARAMS_REF_CELL,
 };
@@ -29,9 +29,7 @@ pub struct UniqueAccessKey {
 
 impl UniqueAccessKey {
     pub fn new(key: AccessKeyUID) -> Self {
-        let nonce = INIT_PARAMS_REF_CELL
-            .with(|params| params.borrow_mut().rng().clone())
-            .gen();
+        let nonce = generate_nonce();
         Self { nonce, key }
     }
 
