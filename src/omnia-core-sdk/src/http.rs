@@ -1,4 +1,4 @@
-use ic_cdk::api::management_canister::http_request::HttpHeader;
+use ic_cdk::{api::management_canister::http_request::HttpHeader, id};
 
 use crate::{
     access_key::{generate_signed_unique_access_key, AccessKeyUID},
@@ -34,6 +34,10 @@ pub async fn get_request_headers(
         HttpHeader {
             name: String::from("X-Omnia-Access-Key-Signature"),
             value: singed_access_key.signature_hex,
+        },
+        HttpHeader {
+            name: String::from("X-IC-Canister-Id"),
+            value: id().to_text(),
         },
         // idempotency header
         HttpHeader {
