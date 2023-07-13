@@ -1,8 +1,8 @@
-use ic_cdk::api::management_canister::ecdsa::{EcdsaCurve, EcdsaKeyId};
 use candid::CandidType;
+use ic_cdk::api::management_canister::ecdsa::{EcdsaCurve, EcdsaKeyId};
 use serde::Serialize;
 
-use crate::access_key::UniqueAccessKey;
+use crate::{access_key::UniqueAccessKey, utils::is_mainnet};
 
 #[derive(CandidType, Serialize, Debug)]
 pub struct PublicKeyReply {
@@ -40,5 +40,14 @@ impl EcdsaKeyIds {
             }
             .to_string(),
         }
+    }
+}
+
+/// Returns the ECDSA key id based on the environment.
+pub fn get_ecdsa_key_id() -> EcdsaKeyId {
+    if is_mainnet() {
+        EcdsaKeyIds::TestKey1.to_key_id()
+    } else {
+        EcdsaKeyIds::TestKeyLocalDevelopment.to_key_id()
     }
 }
