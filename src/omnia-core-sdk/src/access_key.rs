@@ -17,7 +17,7 @@ use crate::{
     INIT_PARAMS_REF_CELL,
 };
 
-pub const ACCESS_KEY_PRICE: Tokens = Tokens::from_e8s(1_000_000);
+pub const ACCESS_KEY_PRICE: Tokens = Tokens::from_e8s(100_000);
 
 pub type AccessKeyUID = String;
 
