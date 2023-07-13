@@ -14,6 +14,7 @@ use crate::{
     ledger::transfer_to,
     random::generate_nonce,
     signature::{EcdsaKeyIds, SignatureReply},
+    utils::is_mainnet,
     INIT_PARAMS_REF_CELL,
 };
 
@@ -58,7 +59,11 @@ impl UniqueAccessKey {
         let request = SignWithEcdsaArgument {
             message_hash: self.generate_hash().to_vec(),
             derivation_path: vec![],
-            key_id: EcdsaKeyIds::TestKeyLocalDevelopment.to_key_id(),
+            key_id: if is_mainnet() {
+                EcdsaKeyIds::TestKey1.to_key_id()
+            } else {
+                EcdsaKeyIds::TestKeyLocalDevelopment.to_key_id()
+            },
         };
 
         let (response,) = sign_with_ecdsa(request)
